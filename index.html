@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;"
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
+      <a-camera gps-new-camera rotation-reader></a-camera>
+
+      <!-- Contenedor donde se inyectará el cubo dinámicamente -->
+      <a-entity id="dynamic-entities"></a-entity>
+    </a-scene>
+
+    <script>
+      window.onload = function () {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(function (position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            const scene = document.querySelector('a-scene');
+            const dynamicEntities = document.getElementById('dynamic-entities');
+
+            const box = document.createElement('a-box');
+            box.setAttribute('gps-new-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
+            box.setAttribute('color', 'red');
+            box.setAttribute('depth', '1');
+            box.setAttribute('height', '1');
+            box.setAttribute('width', '1');
+            box.setAttribute('look-at', '[gps-new-camera]');
+
+            dynamicEntities.appendChild(box);
+          },
+          (error) => {
+            console.error('Error obteniendo geolocalización', error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          });
+        } else {
+          alert('Geolocalización no soportada en este dispositivo.');
+        }
+      };
+    </script>
+  </body>
+</html>
