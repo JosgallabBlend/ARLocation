@@ -1,52 +1,58 @@
-<html>
-  <head>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <a-scene
-      vr-mode-ui="enabled: false"
-      renderer="logarithmicDepthBuffer: true;"
-      embedded
-      arjs="sourceType: webcam; debugUIEnabled: false;"
+<!-- import aframe and then ar.js with image tracking / location based features -->
+<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+<!-- style for the loader -->
+<style>
+  .arjs-loader {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .arjs-loader div {
+    text-align: center;
+    font-size: 1.25em;
+    color: white;
+  }
+</style>
+
+<body style="margin : 0px; overflow: hidden;">
+  <!-- minimal loader shown until image descriptors are loaded. Loading may take a while according to the device computational power -->
+  <div class="arjs-loader">
+    <div>Loading, please wait...</div>
+  </div>
+
+  <!-- a-frame scene -->
+  <a-scene
+    vr-mode-ui="enabled: false;"
+    renderer="logarithmicDepthBuffer: true;"
+    embedded
+    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+  >
+    <!-- a-nft is the anchor that defines an Image Tracking entity -->
+    <!-- on 'url' use the path to the Image Descriptors created before. -->
+    <!-- the path should end with the name without the extension e.g. if file is 'pinball.fset' the path should end with 'pinball' -->
+    <a-nft
+      type="nft"
+      url="image/zorro"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance=".01"
+      smoothThreshold="5"
     >
-      <a-camera gps-new-camera rotation-reader></a-camera>
-
-      <!-- Contenedor donde se inyectará el cubo dinámicamente -->
-      <a-entity id="dynamic-entities"></a-entity>
-    </a-scene>
-
-    <script>
-      window.onload = function () {
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(function (position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            const scene = document.querySelector('a-scene');
-            const dynamicEntities = document.getElementById('dynamic-entities');
-
-            const box = document.createElement('a-box');
-            box.setAttribute('gps-new-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
-            box.setAttribute('color', 'red');
-            box.setAttribute('depth', '1');
-            box.setAttribute('height', '1');
-            box.setAttribute('width', '1');
-            box.setAttribute('look-at', '[gps-new-camera]');
-
-            dynamicEntities.appendChild(box);
-          },
-          (error) => {
-            console.error('Error obteniendo geolocalización', error);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-          });
-        } else {
-          alert('Geolocalización no soportada en este dispositivo.');
-        }
-      };
-    </script>
-  </body>
-</html>
+      <!-- as a child of the a-nft entity, you can define the content to show. here's a GLTF model entity -->
+      <a-box id="cubo" position="0 0.5 0" color="white"></a-box>
+      
+    </a-nft>
+    <!-- static camera that moves according to the device movemenents -->
+    <a-entity camera></a-entity>
+  </a-scene>
+</body>
