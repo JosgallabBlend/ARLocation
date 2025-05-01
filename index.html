@@ -1,7 +1,9 @@
 <html>
   <head>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.1/aframe/build/aframe-ar-nft.js"></script>
   </head>
+  
   <body style="margin: 0; overflow: hidden;">
     <a-scene
       vr-mode-ui="enabled: false"
@@ -11,18 +13,32 @@
     >
       <a-camera gps-new-camera rotation-reader></a-camera>
 
-      <!-- Contenedor donde se inyectará el cubo dinámicamente -->
+      <!-- Entidades dinámicas (como el cubo) -->
       <a-entity id="dynamic-entities"></a-entity>
+
+      <!-- Texto de depuración (lat/lon) -->
+      <a-entity id="debug-text"
+                position="0 2 -5"
+                text="value: Esperando ubicación...; color: yellow; align: center;">
+      </a-entity>
     </a-scene>
 
     <script>
       window.onload = function () {
+        const debugText = document.getElementById('debug-text');
+
         if ('geolocation' in navigator) {
           navigator.geolocation.getCurrentPosition(function (position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
 
-            const scene = document.querySelector('a-scene');
+            // Mostrar lat/lon en el texto
+            debugText.setAttribute('text', {
+              value: `Lat: ${latitude.toFixed(6)}\nLon: ${longitude.toFixed(6)}`,
+              color: 'yellow',
+              align: 'center'
+            });
+
             const dynamicEntities = document.getElementById('dynamic-entities');
 
             const box = document.createElement('a-box');
@@ -37,6 +53,7 @@
           },
           (error) => {
             console.error('Error obteniendo geolocalización', error);
+            debugText.setAttribute('text', 'value', 'Error obteniendo ubicación.');
           },
           {
             enableHighAccuracy: true,
@@ -45,8 +62,10 @@
           });
         } else {
           alert('Geolocalización no soportada en este dispositivo.');
+          debugText.setAttribute('text', 'value', 'Geolocalización no soportada.');
         }
       };
     </script>
   </body>
+
 </html>
