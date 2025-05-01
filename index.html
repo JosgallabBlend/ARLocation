@@ -9,7 +9,7 @@
       vr-mode-ui="enabled: false"
       renderer="logarithmicDepthBuffer: true;"
       embedded
-      arjs="sourceType: webcam; debugUIEnabled: false;"
+      arjs="sourceType: environment; debugUIEnabled: true;"
     >
       <a-camera gps-new-camera rotation-reader></a-camera>
 
@@ -35,7 +35,7 @@
             // Mostrar lat/lon en el texto
             debugText.setAttribute('text', {
               value: `Lat: ${latitude.toFixed(6)}\nLon: ${longitude.toFixed(6)}`,
-              color: 'yellow',
+              color: 'black',
               align: 'center'
             });
 
@@ -47,7 +47,9 @@
             box.setAttribute('depth', '1');
             box.setAttribute('height', '1');
             box.setAttribute('width', '1');
-            box.setAttribute('look-at', '[gps-new-camera]');
+            box.setAttribute('position', '0 1 0'); // 1 metro sobre el suelo
+
+            //box.setAttribute('look-at', '[gps-new-camera]');
 
             dynamicEntities.appendChild(box);
           },
